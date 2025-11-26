@@ -40,3 +40,24 @@ export function saveTheme(theme) {
     // ignore
   }
 }
+
+// PUBLIC_INTERFACE
+export function getGalleryState() {
+  /** Get saved UI Blocks gallery state (category, search, tags) */
+  try {
+    const raw = localStorage.getItem(`${KEY_PREFIX}:galleryState`);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+// PUBLIC_INTERFACE
+export function saveGalleryState(state) {
+  /** Save UI Blocks gallery state (category, search, tags) */
+  try {
+    localStorage.setItem(`${KEY_PREFIX}:galleryState`, JSON.stringify(state));
+  } catch {
+    // ignore
+  }
+}

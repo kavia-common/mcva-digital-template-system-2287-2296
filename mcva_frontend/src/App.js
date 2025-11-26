@@ -6,6 +6,7 @@ import TopNav from './components/TopNav';
 import Sidebar from './components/Sidebar';
 import Editor from './components/Editor';
 import Preview from './components/Preview';
+import UiBlocksGallery from './components/UiBlocksGallery';
 import { useEnv } from './hooks/useEnv';
 import { templates as mockTemplates } from './mock/templates';
 import { getDraft, saveDraft, getTheme, saveTheme } from './utils/storage';
@@ -16,7 +17,7 @@ function App() {
    * Main application component for the MCVA Digital Template System frontend.
    * Provides layout with TopNav, Sidebar, Editor, and Preview.
    * Manages template selection, section navigation, draft editing, preview mode,
-   * and theme toggling with persistence to localStorage.
+   * theme toggling, and a UI Blocks gallery view with persistence to localStorage.
    */
   const env = useEnv();
   const [templates, setTemplates] = useState(mockTemplates);
@@ -25,6 +26,7 @@ function App() {
   const [draft, setDraft] = useState({});
   const [previewMode, setPreviewMode] = useState(true);
   const [theme, setTheme] = useState(getTheme() || 'light');
+  const [currentView, setCurrentView] = useState('editor'); // 'editor' | 'ui-blocks'
 
   const currentTemplate = useMemo(
     () => templates.find(t => t.id === currentTemplateId),
@@ -119,33 +121,50 @@ function App() {
         theme={theme}
         previewMode={previewMode}
         onTogglePreview={onTogglePreview}
+        currentView={currentView}
+        onChangeView={setCurrentView}
       />
       <div className="app-body">
-        <Sidebar
-          sections={sections}
-          currentSection={currentSection}
-          onSelect={setCurrentSection}
-        />
-        <main className="workspace" role="main">
-          <div className={`editor-preview ${previewMode ? 'show-preview' : 'hide-preview'}`}>
-            <section className="editor-pane" aria-label="Editor panel">
-              <Editor
-                key={`${currentTemplateId}-${currentSection}`}
-                sections={sections}
-                currentSection={currentSection}
-                draft={draft}
-                onDraftChange={onDraftChange}
-              />
-            </section>
-            <section className="preview-pane" aria-label="Preview panel">
-              <Preview
-                template={currentTemplate}
-                draft={draft}
-                tokens={themeTokens(theme)}
-              />
-            </section>
-          </div>
-        </main>
+        {currentView === 'editor' ? (
+          <>
+            <Sidebar
+              sections={sections}
+              currentSection={currentSection}
+              onSelect={setCurrentSection}
+            />
+            <main className="workspace" role="main">
+              <div className={`editor-preview ${previewMode ? 'show-preview' : 'hide-preview'}`}>
+                <section className="editor-pane" aria-label="Editor panel">
+                  <Editor
+                    key={`${currentTemplateId}-${currentSection}`}
+                    sections={sections}
+                    currentSection={currentSection}
+                    draft={draft}
+                    onDraftChange={onDraftChange}
+                  />
+                </section>
+                <section className="preview-pane" aria-label="Preview panel">
+                  <Preview
+                    template={currentTemplate}
+                    draft={draft}
+                    tokens={themeTokens(theme)}
+                  />
+                </section>
+              </div>
+            </main>
+          </>
+        ) : (
+          <>
+            {/* Full-width gallery (no sidebar) */}
+            <div style={{ gridColumn: '1 / -1' }} />
+            <main className="workspace" role="main" aria-labelledby="ui-blocks-heading">
+              <h2 id="ui-blocks-heading" className="sr-only">UI Blocks</h2>
+              <section className="editor-pane" aria-label="UI Blocks Gallery Panel">
+                <UiBlocksGallery theme={theme} />
+              </section>
+            </main>
+          </>
+        )}
       </div>
       <footer className="app-footer" aria-label="Application footer">
         <span className="env-footnote">

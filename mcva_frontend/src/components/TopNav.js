@@ -10,15 +10,41 @@ export default function TopNav({
   onToggleTheme,
   theme,
   previewMode,
-  onTogglePreview
+  onTogglePreview,
+  currentView = 'editor',
+  onChangeView
 }) {
-  /** Top navigation bar: brand, template dropdown, save button, preview and theme toggles. */
+  /** Top navigation bar: brand, editor/gallery switch, template dropdown, save button, preview and theme toggles. */
+  const isGallery = currentView === 'ui-blocks';
+
   return (
     <nav className="topnav" aria-label="Top navigation">
       <div className="topnav-inner">
         <div className="brand" aria-label="Application title">MCVA Templates</div>
+
+        {/* View switcher */}
+        <button
+          className="toggle"
+          onClick={() => onChangeView?.('editor')}
+          aria-pressed={currentView === 'editor'}
+          aria-label="Go to Editor view"
+          title="Editor"
+        >
+          Editor
+        </button>
+        <button
+          className="toggle"
+          onClick={() => onChangeView?.('ui-blocks')}
+          aria-pressed={isGallery}
+          aria-label="Go to UI Blocks gallery"
+          title="UI Blocks"
+        >
+          UI Blocks
+        </button>
+
         <div className="nav-spacer" />
 
+        {/* Template selector remains available */}
         <label htmlFor="template-select" className="sr-only">Choose template</label>
         <select
           id="template-select"
@@ -32,24 +58,28 @@ export default function TopNav({
           ))}
         </select>
 
-        <button
-          className="button primary"
-          onClick={onSave}
-          aria-label="Save current draft"
-          title="Save (local)"
-        >
-          Save
-        </button>
+        {!isGallery && (
+          <button
+            className="button primary"
+            onClick={onSave}
+            aria-label="Save current draft"
+            title="Save (local)"
+          >
+            Save
+          </button>
+        )}
 
-        <button
-          className="toggle"
-          onClick={onTogglePreview}
-          aria-pressed={previewMode}
-          aria-label="Toggle preview"
-          title="Toggle preview pane"
-        >
-          {previewMode ? 'Hide Preview' : 'Show Preview'}
-        </button>
+        {!isGallery && (
+          <button
+            className="toggle"
+            onClick={onTogglePreview}
+            aria-pressed={previewMode}
+            aria-label="Toggle preview"
+            title="Toggle preview pane"
+          >
+            {previewMode ? 'Hide Preview' : 'Show Preview'}
+          </button>
+        )}
 
         <button
           className="toggle"

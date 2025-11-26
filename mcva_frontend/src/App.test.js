@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders TopNav and Sidebar', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  // TopNav brand/title
+  expect(screen.getByLabelText(/Top navigation/i)).toBeInTheDocument();
+  expect(screen.getByText(/MCVA Templates/i)).toBeInTheDocument();
+  // Sidebar sections list
+  expect(screen.getByLabelText(/Sections/i)).toBeInTheDocument();
 });
